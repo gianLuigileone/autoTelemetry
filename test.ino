@@ -7,15 +7,17 @@ void setup()
 
 void loop()
 {
-  if(checkState(STATE_GPS_READY)&&checkState(STATE_OBD_READY)&&checkState(STATE_CLIENT))
+  if(checkState(STATE_OBD_READY)&&checkState(STATE_GPS_READY)&&checkState(STATE_CLIENT))
   {
-    Serial.println("ciao");
-    delay(100000);
-    getTelemetry();
-      //sendMqttTelemetry();
+    Serial.print("valori gps:");
+    Serial.println(getValuesGps());
+    Serial.print("valori obd:");
+    Serial.println(getValuesObd());
+    sendMqttTelemetry();
   }
 if(checkState(STATE_GPS_READY)&&checkState(STATE_OBD_READY)&&checkState(STATE_SERIAL_CONNECTED))
 {
   sendSerialTelemetry();
 }
+idleTask();
 }

@@ -152,7 +152,6 @@ bool MqttSim5360Client::connect(const char* clientID, const char* url)
         returnValue = sendCommand(m_buffer);
 		}while(!returnValue);
         if(returnValue)
-			Serial.println(F("MQTT Connesso"));
 		return true;
       }
       else {

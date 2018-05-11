@@ -93,28 +93,31 @@ String getValuesGps()
    String res;
    char tmp[32];
    sys.gpsGetData(&gd);
-   Serial.print("gd.date:");
-   Serial.println(gd.date);
-   if(gd.date==0)
+   Serial.print("ATTEMPT DATA GPS..");
+
+   for(;;)
    {
-     Serial.println("GPS NOT READY");
-     clearState(STATE_GPS_READY);
+     sys.gpsGetData(&gd);
+     if(gd.date!=0)
+     {
+       Serial.println("DATI GPS READY");
+       setState(STATE_GPS_READY);
+       sprintf(tmp,"%.4f$%.4f",(gd.lat/1000000.0),(gd.lng/1000000.0));
+       res.concat("$");
+       res.concat(gd.date); // date
+       res.concat("$");
+       res.concat(gd.time); //time
+       res.concat("$");
+       res.concat(tmp);
+       res.concat("$");
+       res.concat((float)gd.alt/1000);
+       return res;
+       break;
+     }
+     Serial.print(gd.date);
+     delay(500);
+      Serial.print(".");
    }
-   else
-   {
-     Serial.println("DATI GPS READY");
-     setState(STATE_GPS_READY);
-   sprintf(tmp,"%.4f$%.4f",(gd.lat/1000000.0),(gd.lng/1000000.0));
-   res.concat("$");
-   res.concat(gd.date); // date
-   res.concat("$");
-   res.concat(gd.time); //time
-   res.concat("$");
-    res.concat(tmp);
-    res.concat("$");
-    res.concat((float)gd.alt/1000);
-  }
-  return res;
 }
 
 String getValuesObd()
@@ -149,6 +152,7 @@ String getTelemetry()
 
    telemetry.concat(getValuesGps());
    telemetry.concat(getValuesObd());
+   return telemetry;
  }
 // metodo per ascolare sulla seriale
 void idleTask() {
@@ -197,7 +201,6 @@ void sendMqttTelemetry() {
 void obdSetup()
  {
    delay(100);
-   Serial.println(" INIZIO SETUP");
 	Serial.begin(115200L);
   sys.begin();
    if(obd.begin())
@@ -231,6 +234,10 @@ if(checkState(STATE_OBD_READY))
     Serial.println("GPS CONNESSO");
     setState(STATE_GPS_READY);
 
+  }
+  else
+  {
+    Serial.println("GPS NON CONNESSO");
   }
    Serial.println("FINE SETUP");
 }
