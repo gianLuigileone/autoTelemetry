@@ -93,8 +93,6 @@ String getValuesGps()
    String res;
    char tmp[32];
    sys.gpsGetData(&gd);
-   Serial.print("ATTEMPT DATA GPS..");
-
    for(;;)
    {
      sys.gpsGetData(&gd);
@@ -114,9 +112,14 @@ String getValuesGps()
        return res;
        break;
      }
-     Serial.print(gd.date);
-     delay(500);
-      Serial.print(".");
+     else
+     {
+       Serial.print("ATTEMPT DATA GPS..");
+       Serial.print(gd.date);
+       delay(500);
+        Serial.print(".");
+     }
+
    }
 }
 
@@ -160,10 +163,14 @@ void idleTask() {
   while (Serial.available()) {
     // get the new byte:
     in = Serial.readStringUntil('\r');
-      if (in.equals("start")) {
+      if (in.equals("start"))
+
+       {
+         Serial.println("start serial");
         setState(STATE_SERIAL_CONNECTED); // setta il bit relativo allo stato ad uno
       }
       if (in.equals("stop")) {
+        Serial.println("stop serial");
         clearState(STATE_SERIAL_CONNECTED); // setta il bit relativo allo stato a zero
       }
       if (in.startsWith("s_sampling")){
