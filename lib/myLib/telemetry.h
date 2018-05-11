@@ -1,5 +1,6 @@
 #include "FreematicsPlus.h"
 #include "MqttSim5360Client.h"
+#include "telemetry_config.h"
 
 #define STATE_SERIAL_CONNECTED 0x1
 #define STATE_OBD_READY 0x2
@@ -188,7 +189,7 @@ void sendMqttTelemetry() {
   const char *str;
   str = s.c_str();
   delay(500);
-  client.send("obd/dispositivi/measures", str);
+  client.send(TOPIC_MEASURES, str);
   starting_timer = millis();
   }
 }
@@ -210,14 +211,14 @@ void obdSetup()
       Serial.println("CLIENT Connesso");
         setState(STATE_CLIENT);
     }
-   if (client.setup("mobile.vodafone.it") && checkState(STATE_CLIENT))
+   if (client.setup(APN) && checkState(STATE_CLIENT))
       {
            Serial.println("APN Connesso");
        }
 
    if (client.open() && checkState(STATE_CLIENT))
     {
-   if (client.connect("asda-123", "tcp://broker.mqttdashboard.com:1883"))
+   if (client.connect(CLIENT_MQTT_ID, MQTT_URL))
      Serial.println("MQTT CONNESSO");
 
 }
@@ -225,7 +226,7 @@ if(checkState(STATE_OBD_READY))
 {
   obd.getVIN(vin, sizeof(vin));
 }
-  if (sys.gpsInit(115200L))
+  if (sys.gpsInit(GPS_SERIAL_BAUDRATE))
   {
     Serial.println("GPS CONNESSO");
     setState(STATE_GPS_READY);
